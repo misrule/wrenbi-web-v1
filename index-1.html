@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wrenbi - Intelligent Change</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@12.7.4/dist/framer-motion.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#333333',
+            secondary: '#666666',
+            accent: '#999999',
+            light: '#f5f5f5'
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    .container {
+      @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+    
+    .section {
+      @apply py-12 md:py-16 lg:py-20;
+    }
+    
+    .heading-xl {
+      @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+    }
+    
+    .heading-lg {
+      @apply text-3xl md:text-4xl font-bold tracking-tight;
+    }
+    
+    .heading-md {
+      @apply text-2xl md:text-3xl font-bold;
+    }
+    
+    .subheading {
+      @apply text-lg md:text-xl font-medium text-secondary mt-4 max-w-3xl;
+    }
+    
+    .btn-primary {
+      @apply inline-block px-6 py-3 bg-primary text-white font-medium rounded-md transition duration-300 hover:bg-opacity-90;
+    }
+    
+    .nav-link {
+      @apply text-sm font-medium text-secondary hover:text-primary transition duration-300;
+    }
+  </style>
+</head>
+<body class="bg-white text-primary antialiased">
+  <!-- Navigation -->
+  <header class="sticky top-0 z-50 bg-white shadow-sm">
+    <div class="container flex items-center justify-between h-16 md:h-20">
+      <a href="#" class="text-2xl font-bold">Wrenbi</a>
+      
+      <!-- Mobile menu button -->
+      <button id="menu-toggle" class="md:hidden focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      
+      <!-- Desktop navigation -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#founder" class="nav-link">Founder</a>
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#contact" class="btn-primary">Let's Talk</a>
+      </nav>
+    </div>
+    
+    <!-- Mobile navigation -->
+    <nav id="mobile-menu" class="hidden md:hidden bg-light">
+      <div class="container py-4 space-y-4">
+        <a href="#about" class="block nav-link">About</a>
+        <a href="#founder" class="block nav-link">Founder</a>
+        <a href="#services" class="block nav-link">Services</a>
+        <a href="#contact" class="block btn-primary w-full text-center">Let's Talk</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="section bg-light">
+    <div class="container min-h-[70vh] flex flex-col justify-center">
+      <h1 class="heading-xl">Intelligent Change.</h1>
+      <p class="subheading mt-6">Trusted advice and sharp execution across AI, regulation, and IT strategy.</p>
+      <div class="mt-10">
+        <a href="#contact" class="btn-primary">Let's Talk</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2 class="heading-lg">Wrenbi: For Projects That Can't Afford to Go Sideways.</h2>
+      <p class="mt-6 text-lg max-w-3xl">
+        With over 20 years of experience at the intersection of technology, business, and risk, we help financial services organisations solve the hard problems—delivering impactful IT solutions, navigating regulatory complexity, and aligning technology with business strategy. We bring clarity where others bring chaos.
+      </p>
+      
+      <h3 class="heading-md mt-12">Precision thinking for complex times.</h3>
+      <p class="mt-4 text-lg max-w-3xl">
+        From foundational IT projects to cutting-edge AI governance, we lead transformation with care, insight, and structure. We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks—ensuring innovation is safe, strategic, and built to last.
+      </p>
+      
+      <div class="mt-16">
+        <h3 class="heading-md">Wrenbi is a boutique consultancy built for complexity.</h3>
+        <p class="mt-4 text-lg max-w-3xl">
+          With over 20 years' experience at the intersection of technology, business, and risk, we help financial services organisations solve the hard problems—impactful IT solutions, optimize processes, and align projects with business goals. We bring clarity where others bring chaos.
+        </p>
+      </div>
+      
+      <div class="mt-12">
+        <h3 class="heading-md">Our work sits where the stakes are high.</h3>
+        <p class="mt-4 text-lg max-w-3xl">
+          From core IT projects to cutting-edge AI governance, we guide organisations through transformation with precision and foresight. We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks—ensuring innovation happens safely, strategically, and in alignment with your business goals.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder Section -->
+  <section id="founder" class="section bg-light">
+    <div class="container">
+      <h2 class="heading-lg">Meet Our Founder</h2>
+      
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div class="md:col-span-4">
+          <img src="https://placehold.co/400x500" alt="Clare McGovern" class="w-full h-auto rounded-lg shadow-md">
+        </div>
+        
+        <div class="md:col-span-8">
+          <h3 class="heading-md">Clare McGovern</h3>
+          <p class="mt-4 text-lg">
+            Clare is the founder of Wrenbi and a seasoned IT consultant with over 25 years of experience delivering complex, high-stakes projects across the financial services sector.
+          </p>
+          
+          <p class="mt-4 text-lg">Her career spans:</p>
+          
+          <ul class="mt-4 space-y-2 text-lg">
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>Leading major regulatory transformation programs at global banks and superannuation funds</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>Designing and refining IT governance frameworks that stand up to scrutiny</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>Building innovative digital learning solutions for enterprise clients</span>
+            </li>
+          </ul>
+          
+          <p class="mt-6 text-lg">
+            Clare combines deep technical fluency with strategic foresight, bringing a rare blend of rigour and creativity to every engagement. Under her leadership, Wrenbi delivers the kind of results that quietly shift entire organisations forward. She's the one you call when the stakes are high, the timelines are tight, and the margin for error is nil.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="section">
+    <div class="container">
+      <h2 class="heading-lg">Our Services</h2>
+      
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+        <div class="p-6 border border-accent rounded-lg hover:shadow-md transition duration-300">
+          <h3 class="text-xl font-bold">AI Strategy and Integration</h3>
+          <p class="mt-3 text-secondary">
+            Develop and implement AI strategies that align with your business objectives and enhance operational efficiency.
+          </p>
+        </div>
+        
+        <div class="p-6 border border-accent rounded-lg hover:shadow-md transition duration-300">
+          <h3 class="text-xl font-bold">AI Usage Policies</h3>
+          <p class="mt-3 text-secondary">
+            Create comprehensive AI usage policies that ensure ethical implementation, regulatory compliance, and effective governance.
+          </p>
+        </div>
+        
+        <div class="p-6 border border-accent rounded-lg hover:shadow-md transition duration-300">
+          <h3 class="text-xl font-bold">Adaptive AI Governance</h3>
+          <p class="mt-3 text-secondary">
+            Sustain and evolve your AI governance frameworks to ensure your initiatives remain responsible, effective, and aligned with business goals.
+          </p>
+        </div>
+        
+        <div class="p-6 border border-accent rounded-lg hover:shadow-md transition duration-300">
+          <h3 class="text-xl font-bold">IT Consulting</h3>
+          <p class="mt-3 text-secondary">
+            Deliver high-impact IT consulting services, including regulatory compliance, e-learning development, and technical documentation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section -->
+  <section id="contact" class="section bg-light">
+    <div class="container text-center">
+      <h2 class="heading-lg max-w-3xl mx-auto">At Wrenbi, we're more than consultants – we're your partners in navigating the complex landscape of modern business technology.</h2>
+      <p class="mt-6 text-lg max-w-2xl mx-auto">Let's build your future together.</p>
+      
+      <div class="mt-10">
+        <a href="mailto:contact@wrenbi.com" class="btn-primary">Get In Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 bg-primary text-white">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-xl font-bold">Wrenbi</h3>
+          <p class="mt-4 text-sm">
+            Intelligent solutions for forward-thinking businesses.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold">Connect</h3>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="#" class="text-sm hover:underline">LinkedIn</a>
+            </li>
+            <li>
+              <a href="mailto:contact@wrenbi.com" class="text-sm hover:underline">contact@wrenbi.com</a>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold">Legal</h3>
+          <p class="mt-4 text-sm">
+            © 2025 Wrenbi Consulting. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Close mobile menu when clicking a link
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+
+  <!-- Back to Showcase Button -->
+<!-- Add this code just before the closing </body> tag in each design file -->
+
+<style>
+  .back-to-showcase {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+  }
+  
+  .back-to-showcase:hover {
+    transform: scale(1.1);
+    background: rgb(17, 17, 17);
+  }
+  
+  .back-to-showcase i {
+    font-size: 18px;
+  }
+  
+  .back-to-showcase .tooltip {
+    position: absolute;
+    right: 60px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .back-to-showcase:hover .tooltip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>
+
+<!-- Add Font Awesome if not already included in the design -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<button class="back-to-showcase" onclick="window.location.href='index.html'">
+  <i class="fas fa-arrow-left"></i>
+  <span class="tooltip">Back to Showcase</span>
+</button>
+</body>
+</html>

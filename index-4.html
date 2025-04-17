@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wrenbi - Next-Level AI Design</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@12.7.4/dist/framer-motion.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <script>
+    // Global function to close menu (for inline onclick events)
+    function closeMenu() {
+      const fullscreenMenu = document.getElementById('fullscreen-menu');
+      const menuIcon = document.querySelector('.menu-icon');
+      
+      fullscreenMenu.classList.add('hidden');
+      fullscreenMenu.classList.remove('pointer-events-auto');
+      
+      // Reset menu icon
+      gsap.to(menuIcon.children[0], {
+        rotate: 0,
+        y: 0,
+        duration: 0.4
+      });
+      
+      gsap.to(menuIcon.children[1], {
+        rotate: 0,
+        duration: 0.4
+      });
+    }
+    
+    // Global function to open menu (for potential use)
+    function openMenu() {
+      const fullscreenMenu = document.getElementById('fullscreen-menu');
+      const menuIcon = document.querySelector('.menu-icon');
+      const menuLinks = document.querySelectorAll('.menu-link');
+      
+      fullscreenMenu.classList.remove('hidden');
+      fullscreenMenu.classList.add('pointer-events-auto');
+      
+      // Animate menu icon
+      gsap.to(menuIcon.children[0], {
+        rotate: 45,
+        y: 6,
+        duration: 0.4
+      });
+      
+      gsap.to(menuIcon.children[1], {
+        rotate: -45,
+        duration: 0.4
+      });
+      
+      // Staggered animation for menu items
+      gsap.fromTo(menuLinks, {
+        y: 20,
+        opacity: 0
+      }, {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        delay: 0.2
+      });
+    }
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#111111',
+            medium: '#333333',
+            light: '#FAFAFA',
+            accent: '#555555',
+          },
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    html {
+      scroll-behavior: smooth;
+      cursor: default;
+    }
+    
+    body {
+      @apply font-sans text-medium antialiased bg-light overflow-x-hidden;
+    }
+    
+    .cursor-dot {
+      @apply fixed w-6 h-6 rounded-full bg-dark/20 mix-blend-difference pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 backdrop-invert;
+      transition: transform 0.15s ease-out;
+    }
+    
+    .cursor-outline {
+      @apply fixed w-10 h-10 rounded-full border border-dark/20 mix-blend-difference pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 backdrop-invert;
+      transition: transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out;
+    }
+    
+    .container-fluid {
+      @apply max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-20;
+    }
+    
+    .heading-xl {
+      @apply text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] tracking-tighter;
+      letter-spacing: -2px;
+    }
+    
+    .split-text {
+      overflow: hidden;
+    }
+    
+    .split-text span {
+      @apply inline-block;
+    }
+    
+    .reveal-text {
+      @apply relative overflow-hidden inline-block;
+    }
+    
+    .reveal-text::after {
+      content: '';
+      @apply absolute top-0 left-0 w-full h-full bg-light transform translate-x-0 z-10;
+    }
+    
+    .noise-bg {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: 0.05;
+    }
+    
+    .noise-pattern {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      @apply noise-bg;
+    }
+    
+    .btn-primary {
+      @apply relative inline-flex items-center justify-center overflow-hidden py-3 px-6 font-medium rounded-full text-light transition-all duration-300;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      @apply absolute inset-0 bg-dark transition-all duration-500 z-0;
+    }
+    
+    .btn-primary:hover::before {
+      transform: translateX(100%);
+    }
+    
+    .btn-primary::after {
+      content: '';
+      @apply absolute inset-0 border border-dark transition-all duration-500 z-0;
+    }
+    
+    .btn-primary span {
+      @apply relative z-10;
+    }
+    
+    .magnetic-item {
+      @apply transition-transform duration-300;
+    }
+    
+    .hover-outline {
+      @apply relative transition-all duration-300;
+    }
+    
+    .hover-outline::after {
+      content: '';
+      @apply absolute inset-0 border border-dark/0 rounded-lg transition-all duration-300;
+    }
+    
+    .hover-outline:hover::after {
+      @apply border-dark/50 -inset-1;
+    }
+    
+    .section-tag {
+      @apply flex items-center text-xs uppercase tracking-widest font-mono;
+    }
+    
+    .section-tag::before {
+      content: '';
+      @apply w-8 h-px bg-dark mr-3;
+    }
+    
+    .reveal-image {
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    
+    .reveal-image.is-revealed {
+      clip-path: inset(0 0 0 0);
+    }
+    
+    .marquee-wrapper {
+      @apply overflow-hidden whitespace-nowrap py-10;
+    }
+    
+    .marquee-content {
+      @apply inline-block;
+      animation: marquee 30s linear infinite;
+    }
+    
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    
+    .dot-grid {
+      background-image: radial-gradient(circle, #000 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Custom Cursor -->
+  <div class="cursor-dot hidden md:block"></div>
+  <div class="cursor-outline hidden md:block"></div>
+  
+  <!-- Noise Pattern Overlay -->
+  <div class="noise-pattern fixed inset-0 pointer-events-none"></div>
+  
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="fixed inset-0 z-50 bg-light flex items-center justify-center">
+    <div class="flex flex-col items-center">
+      <div class="relative">
+        <svg class="w-24 h-24 " viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" stroke="#111" stroke-width="2" fill="none" />
+          <path id="loading-circle" stroke="#111" stroke-width="2" fill="none"
+            d="M50,10
+              a 40,40 0 0,1 0,80
+              a 40,40 0 0,1 0,-80"
+            stroke-dasharray="251"
+            stroke-dashoffset="251" />
+        </svg>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-mono text-xs tracking-widest">
+          WRENBI
+        </div>
+      </div>
+      <div class="font-mono text-sm" id="loading-progress">0%</div>
+    </div>
+  </div>
+  
+  <!-- Header/Navigation -->
+  <header class="fixed top-0 left-0 right-0 z-40 py-6 transition-all duration-500" id="main-header">
+    <div class="container-fluid">
+      <div class="flex items-center justify-between">
+        <a href="#" class="text-xl font-bold tracking-tight relative magnetic-item group">
+          <span data-strength="30">
+            W<span class="text-accent">.</span>
+          </span>
+          <div class="absolute -bottom-1 left-0 w-0 h-px bg-dark group-hover:w-full transition-all duration-300"></div>
+        </a>
+        
+        <!-- Menu Button -->
+        <button id="menu-toggle" class="flex items-center justify-center magnetic-item" data-strength="50" onclick="openMenu()">
+          <span class="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-dark/5 transition-colors">
+            <span class="menu-icon">
+              <span class="block w-5 h-px bg-dark mb-1.5 transition-transform duration-300"></span>
+              <span class="block w-5 h-px bg-dark transition-all duration-300"></span>
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Fullscreen Menu -->
+  <div id="fullscreen-menu" class="fixed inset-0 z-40 bg-light hidden pointer-events-none">
+    <div class="container-fluid h-full flex flex-col justify-between py-32">
+      <div class="flex justify-end mb-4">
+        <button id="menu-close" class="flex items-center justify-center w-12 h-12 rounded-full hover:bg-dark/5 transition-colors" 
+                onclick="closeMenu()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div>
+          <div class="section-tag mb-8">Navigate</div>
+          <ul class="space-y-6">
+            <li>
+              <a href="#about" class="group text-5xl md:text-7xl font-bold tracking-tight text-dark/30 hover:text-dark transition-colors duration-300 flex items-center menu-link" onclick="closeMenu()">
+                <span class="mr-4 w-0 h-px bg-dark group-hover:w-10 transition-all duration-300"></span>
+                <span>About</span>
+              </a>
+            </li>
+            <li>
+              <a href="#founder" class="group text-5xl md:text-7xl font-bold tracking-tight text-dark/30 hover:text-dark transition-colors duration-300 flex items-center menu-link" onclick="closeMenu()">
+                <span class="mr-4 w-0 h-px bg-dark group-hover:w-10 transition-all duration-300"></span>
+                <span>Founder</span>
+              </a>
+            </li>
+            <li>
+              <a href="#services" class="group text-5xl md:text-7xl font-bold tracking-tight text-dark/30 hover:text-dark transition-colors duration-300 flex items-center menu-link" onclick="closeMenu()">
+                <span class="mr-4 w-0 h-px bg-dark group-hover:w-10 transition-all duration-300"></span>
+                <span>Services</span>
+              </a>
+            </li>
+            <li>
+              <a href="#contact" class="group text-5xl md:text-7xl font-bold tracking-tight text-dark/30 hover:text-dark transition-colors duration-300 flex items-center menu-link" onclick="closeMenu()">
+                <span class="mr-4 w-0 h-px bg-dark group-hover:w-10 transition-all duration-300"></span>
+                <span>Contact</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="md:text-right flex flex-col items-start md:items-end justify-between">
+          <div>
+            <div class="section-tag mb-8">Connect</div>
+            <a href="mailto:contact@wrenbi.com" class="inline-block group">
+              <span class="font-mono text-sm mb-2 flex items-center">
+                <span class="block w-4 h-px bg-dark mr-2"></span>
+                Email
+              </span>
+              <span class="text-xl font-medium relative">
+                contact@wrenbi.com
+                <span class="absolute left-0 bottom-0 w-0 h-px bg-dark group-hover:w-full transition-all duration-300"></span>
+              </span>
+            </a>
+          </div>
+          
+          <div class="mt-12">
+            <a href="#" class="inline-block mr-6 hover:opacity-70 transition-opacity">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-10 text-xs border-t border-dark/10 pt-6">
+        <div class="font-mono">
+          © 2025 Wrenbi Consulting
+        </div>
+        <div class="text-right font-mono">
+          Digital Excellence
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="min-h-screen flex items-center justify-center relative pt-20 pb-10">
+    <div class="container-fluid relative">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+        <div>
+          <div class="section-tag mb-10">
+            <span id="hero-tag">NOT JUST ANOTHER AI CONSULTANCY</span>
+          </div>
+          
+          <div class="heading-xl mb-6">
+            <div>Intelligent</div>
+            <div>Change<span class="text-accent">.</span></div>
+          </div>
+          
+          <p class="text-xl max-w-md mb-10">
+            <span>Trusted advice and sharp execution across AI,</span>
+            <span>regulation, and IT strategy.</span>
+          </p>
+          
+          <div class="reveal-text">
+            <a href="#contact" class="btn-primary magnetic-item" data-strength="40">
+              <span class="flex items-center">
+                Let's Talk
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <!-- Hero image with reveal animation -->
+          <div class="relative aspect-square overflow-hidden rounded-lg">
+            <div class="absolute inset-0 dot-grid"></div>
+            <div class="reveal-image w-full h-full bg-accent/5 flex items-center justify-center">
+              <!-- Abstract 3D element -->
+              <div class="relative w-3/4 h-3/4 hero-abstract">
+                <div class="absolute top-0 left-0 w-40 h-40 rounded-full border border-dark/20"></div>
+                <div class="absolute bottom-0 right-0 w-60 h-60 rounded-full border border-dark/20"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-dark/10"></div>
+                <div class="absolute top-1/3 right-1/4 w-10 h-10 rounded-full bg-dark/5"></div>
+                <div class="absolute bottom-1/4 left-1/3 w-15 h-15 rounded-full bg-dark/5"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Highlight features -->
+          <div class="absolute -bottom-6 -left-6 max-w-xs py-3 px-4 bg-dark text-light rounded-md">
+            <div class="flex items-center font-mono text-xs">
+              <span class="w-2 h-2 rounded-full bg-accent/50 mr-2"></span>
+              AI STRATEGY
+            </div>
+          </div>
+          
+          <div class="absolute -top-6 -right-6 max-w-xs py-3 px-4 bg-white rounded-md shadow-lg font-mono text-xs flex items-center">
+            <span class="w-2 h-2 rounded-full bg-dark mr-2"></span>
+            REGULATORY EXPERTISE
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+        <div class="font-mono text-xs mb-2">Scroll</div>
+        <div class="w-px h-10 bg-dark/20 relative">
+          <div class="absolute top-0 left-0 w-full h-1/3 bg-dark animate-[pulse_2s_infinite]"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Text Marquee -->
+  <div class="border-y border-dark/10">
+    <div class="marquee-wrapper">
+      <div class="marquee-content">
+        <span class="mx-4 text-4xl font-bold tracking-tight">AI Strategy • Regulatory Compliance • IT Governance • Digital Transformation • </span>
+        <span class="mx-4 text-4xl font-bold tracking-tight">AI Strategy • Regulatory Compliance • IT Governance • Digital Transformation • </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <section id="about" class="py-24 relative">
+    <div class="container-fluid">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="section-tag mb-10">About Wrenbi</div>
+          
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8">
+            <div>For Projects That</div>
+            <div>Can't Afford to Go Sideways.</div>
+          </h2>
+          
+          <p class="text-lg max-w-xl mb-6">
+            With over 20 years of experience at the intersection of technology, business, and risk, we help financial services organisations solve the hard problems—delivering impactful IT solutions, navigating regulatory complexity, and aligning technology with business strategy.
+          </p>
+          
+          <p class="text-lg max-w-xl">
+            We bring clarity where others bring chaos.
+          </p>
+          
+          <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="hover-outline p-6 rounded-lg magnetic-item" data-strength="20">
+              <div class="text-4xl font-bold mb-2">20+</div>
+              <div class="text-sm">Years of experience</div>
+            </div>
+            
+            <div class="hover-outline p-6 rounded-lg magnetic-item" data-strength="20">
+              <div class="text-4xl font-bold mb-2">100%</div>
+              <div class="text-sm">Success rate</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-10">
+          <div class="hover-outline p-8 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">Precision thinking for complex times.</h3>
+            <p class="text-base">
+              From foundational IT projects to cutting-edge AI governance, we lead transformation with care, insight, and structure. We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks—ensuring innovation is safe, strategic, and built to last.
+            </p>
+          </div>
+          
+          <div class="hover-outline p-8 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">Our work sits where the stakes are high.</h3>
+            <p class="text-base">
+              From core IT projects to cutting-edge AI governance, we guide organisations through transformation with precision and foresight. We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks—ensuring innovation happens safely, strategically, and in alignment with your business goals.
+            </p>
+          </div>
+          
+          <div class="hover-outline p-8 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">Wrenbi is a boutique consultancy built for complexity.</h3>
+            <p class="text-base">
+              With over 20 years' experience at the intersection of technology, business, and risk, we help financial services organisations solve the hard problems—impactful IT solutions, optimize processes, and align projects with business goals.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder Section -->
+  <section id="founder" class="py-24 bg-dark text-light relative">
+    <div class="noise-pattern opacity-30"></div>
+    
+    <div class="container-fluid relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <div class="lg:col-span-7 order-2 lg:order-1">
+          <div class="section-tag mb-10">Our Founder</div>
+          
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8">
+            <div>Meet</div>
+            <div>Clare McGovern<span class="text-accent">.</span></div>
+          </h2>
+          
+          <p class="text-lg max-w-xl mb-8">
+            Clare is the founder of Wrenbi and a seasoned IT consultant with over 25 years of experience delivering complex, high-stakes projects across the financial services sector.
+          </p>
+          
+          <div class="mt-10 space-y-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-light/10 flex items-center justify-center mr-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-bold text-lg">Leading major regulatory transformation programs</div>
+                <div class="mt-1 text-light/80">at global banks and superannuation funds</div>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-light/10 flex items-center justify-center mr-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-bold text-lg">Designing and refining IT governance frameworks</div>
+                <div class="mt-1 text-light/80">that stand up to scrutiny</div>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-light/10 flex items-center justify-center mr-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-bold text-lg">Building innovative digital learning solutions</div>
+                <div class="mt-1 text-light/80">for enterprise clients</div>
+              </div>
+            </div>
+          </div>
+          
+          <p class="mt-10 text-lg max-w-xl">
+            Clare combines deep technical fluency with strategic foresight, bringing a rare blend of rigour and creativity to every engagement. She's the one you call when the stakes are high, the timelines are tight, and the margin for error is nil.
+          </p>
+        </div>
+        
+        <div class="lg:col-span-5 order-1 lg:order-2">
+          <div class="relative">
+            <!-- Visual composition with smaller image -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Smaller headshot with abstract design elements -->
+              <div class="col-span-1 aspect-square relative overflow-hidden">
+                <div class="absolute inset-0 border-2 border-light/20 rounded-lg"></div>
+                <div class="w-full h-full p-4">
+                  <!-- The actual headshot - much smaller than before -->
+                  <div class="w-full h-full overflow-hidden rounded-lg relative">
+                    <img src="https://placehold.co/400x400" alt="Clare McGovern" class="w-full h-full object-cover">
+                    <!-- Subtle overlay to blend with background -->
+                    <div class="absolute inset-0 bg-dark/20"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Abstract design element to fill space -->
+              <div class="col-span-1 aspect-square bg-light/5 rounded-lg flex items-center justify-center p-4">
+                <div class="w-full h-full rounded-full border border-light/10 flex items-center justify-center">
+                  <div class="w-2/3 h-2/3 rounded-full border border-light/20"></div>
+                </div>
+              </div>
+              
+              <!-- Abstract design element to fill space -->
+              <div class="col-span-1 aspect-square bg-light/5 rounded-lg flex items-center justify-center overflow-hidden">
+                <div class="w-32 h-32 rotate-45 transform border border-light/20"></div>
+              </div>
+              
+              <!-- Abstract text/quote element -->
+              <div class="col-span-1 aspect-square bg-accent/10 rounded-lg flex items-center justify-center p-6">
+                <div class="font-mono text-xs tracking-wider text-light/70 text-center">
+                  "Translating complexity into clarity"
+                </div>
+              </div>
+            </div>
+            
+            <!-- Decorative elements -->
+            <div class="absolute -top-6 -right-6 w-32 h-32 border border-light/10 rounded-lg -z-10"></div>
+            <div class="absolute -bottom-6 -left-6 w-32 h-32 border border-light/10 rounded-lg -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-24 relative">
+    <div class="container-fluid">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
+        <div>
+          <div class="section-tag mb-6">Our Services</div>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <div>Expert</div>
+            <div>Solutions<span class="text-accent">.</span></div>
+          </h2>
+        </div>
+        
+        <p class="mt-6 md:mt-0 max-w-md text-lg">
+          Strategic solutions for forward-thinking businesses
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="service-card hover:outline p-10 rounded-lg relative overflow-hidden magnetic-item" data-strength="10">
+          <div class="absolute top-0 left-0 w-full h-1 bg-dark scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"></div>
+          
+          <div class="flex items-start justify-between mb-10">
+            <div class="w-16 h-16 rounded-lg bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            
+            <div class="font-mono text-sm">01</div>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4">AI Strategy and Integration</h3>
+          
+          <p class="text-medium mb-8">
+            Develop and implement AI strategies that align with your business objectives and enhance operational efficiency.
+          </p>
+          
+          <a href="#contact" class="inline-flex items-center text-dark font-medium">
+            <div class="relative overflow-hidden">
+              <span class="inline-block group-hover:-translate-y-full transition-transform duration-300">Learn more</span>
+              <span class="inline-block absolute left-0 top-full group-hover:-translate-y-full transition-transform duration-300">Discover how →</span>
+            </div>
+          </a>
+        </div>
+        
+        <div class="service-card hover:outline p-10 rounded-lg relative overflow-hidden magnetic-item" data-strength="10">
+          <div class="absolute top-0 left-0 w-full h-1 bg-dark scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"></div>
+          
+          <div class="flex items-start justify-between mb-10">
+            <div class="w-16 h-16 rounded-lg bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            
+            <div class="font-mono text-sm">02</div>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4">AI Usage Policies</h3>
+          
+          <p class="text-medium mb-8">
+            Create comprehensive AI usage policies that ensure ethical implementation, regulatory compliance, and effective governance.
+          </p>
+          
+          <a href="#contact" class="inline-flex items-center text-dark font-medium">
+            <div class="relative overflow-hidden">
+              <span class="inline-block group-hover:-translate-y-full transition-transform duration-300">Learn more</span>
+              <span class="inline-block absolute left-0 top-full group-hover:-translate-y-full transition-transform duration-300">Discover how →</span>
+            </div>
+          </a>
+        </div>
+        
+        <div class="service-card hover:outline p-10 rounded-lg relative overflow-hidden magnetic-item" data-strength="10">
+          <div class="absolute top-0 left-0 w-full h-1 bg-dark scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"></div>
+          
+          <div class="flex items-start justify-between mb-10">
+            <div class="w-16 h-16 rounded-lg bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            
+            <div class="font-mono text-sm">03</div>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4">Adaptive AI Governance</h3>
+          
+          <p class="text-medium mb-8">
+            Sustain and evolve your AI governance frameworks to ensure your initiatives remain responsible, effective, and aligned with business goals.
+          </p>
+          
+          <a href="#contact" class="inline-flex items-center text-dark font-medium">
+            <div class="relative overflow-hidden">
+              <span class="inline-block group-hover:-translate-y-full transition-transform duration-300">Learn more</span>
+              <span class="inline-block absolute left-0 top-full group-hover:-translate-y-full transition-transform duration-300">Discover how →</span>
+            </div>
+          </a>
+        </div>
+        
+        <div class="service-card hover:outline p-10 rounded-lg relative overflow-hidden magnetic-item" data-strength="10">
+          <div class="absolute top-0 left-0 w-full h-1 bg-dark scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"></div>
+          
+          <div class="flex items-start justify-between mb-10">
+            <div class="w-16 h-16 rounded-lg bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            
+            <div class="font-mono text-sm">04</div>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4">IT Consulting</h3>
+          
+          <p class="text-medium mb-8">
+            Deliver high-impact IT consulting services, including regulatory compliance, e-learning development, and technical documentation.
+          </p>
+          
+          <a href="#contact" class="inline-flex items-center text-dark font-medium">
+            <div class="relative overflow-hidden">
+              <span class="inline-block group-hover:-translate-y-full transition-transform duration-300">Learn more</span>
+              <span class="inline-block absolute left-0 top-full group-hover:-translate-y-full transition-transform duration-300">Discover how →</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Split Section -->
+  <section class="py-24 bg-dark text-light relative overflow-hidden">
+    <div class="noise-pattern opacity-30"></div>
+    
+    <div class="container-fluid relative">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="section-tag mb-10">Our Approach</div>
+          
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8">
+            <div>You're not ready</div>
+            <div>for this website<span class="text-accent">.</span></div>
+          </h2>
+          
+          <p class="text-xl max-w-xl mb-10 opacity-90">
+            We bring clarity where others bring chaos. From foundational IT projects to cutting-edge AI governance, we lead transformation with care, insight, and structure.
+          </p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-6 border border-light/20 rounded-lg hover:border-light/40 transition-colors duration-300">
+              <div class="font-mono text-xs mb-4">01. ANALYZE</div>
+              <p class="text-sm">Thorough assessment of your current systems and strategic needs</p>
+            </div>
+            
+            <div class="p-6 border border-light/20 rounded-lg hover:border-light/40 transition-colors duration-300">
+              <div class="font-mono text-xs mb-4">02. STRATEGIZE</div>
+              <p class="text-sm">Develop a tailored roadmap with clear objectives and milestones</p>
+            </div>
+            
+            <div class="p-6 border border-light/20 rounded-lg hover:border-light/40 transition-colors duration-300">
+              <div class="font-mono text-xs mb-4">03. IMPLEMENT</div>
+              <p class="text-sm">Execute with precision across technical and organizational dimensions</p>
+            </div>
+            
+            <div class="p-6 border border-light/20 rounded-lg hover:border-light/40 transition-colors duration-300">
+              <div class="font-mono text-xs mb-4">04. EVOLVE</div>
+              <p class="text-sm">Continuous improvement through monitoring and adaptation</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="relative aspect-square p-10">
+          <!-- Abstract 3D visualization -->
+          <div class="w-full h-full relative approach-visual">
+            <div class="absolute inset-0 rounded-lg border border-light/20"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2">
+              <div class="absolute w-full h-full rounded-full border border-light/30 animate-[spin_30s_linear_infinite]"></div>
+              <div class="absolute w-full h-full rounded-full border border-light/20 animate-[spin_20s_linear_infinite_reverse]"></div>
+              <div class="absolute w-3/4 h-3/4 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border border-light/40 animate-[spin_15s_linear_infinite]"></div>
+              <div class="absolute w-1/2 h-1/2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border border-light/50 animate-[spin_10s_linear_infinite_reverse]"></div>
+              <div class="absolute w-1/4 h-1/4 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-light/10"></div>
+            </div>
+            
+            <!-- Technology nodes -->
+            <div class="absolute top-1/4 right-1/4 w-4 h-4 rounded-full bg-light/30 pulse-animation"></div>
+            <div class="absolute bottom-1/3 left-1/4 w-3 h-3 rounded-full bg-light/20 pulse-animation animation-delay-2"></div>
+            <div class="absolute top-1/3 left-1/5 w-2 h-2 rounded-full bg-light/40 pulse-animation animation-delay-1"></div>
+            <div class="absolute bottom-1/4 right-1/3 w-5 h-5 rounded-full bg-light/15 pulse-animation animation-delay-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section -->
+  <section id="contact" class="py-24 relative">
+    <div class="container-fluid">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="section-tag mb-10">Get In Touch</div>
+          
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8">
+            <div>Let's build your</div>
+            <div>future together<span class="text-accent">.</span></div>
+          </h2>
+          
+          <p class="text-xl max-w-xl mb-10">
+            At Wrenbi, we're more than consultants – we're your partners in navigating the complex landscape of modern business technology.
+          </p>
+          
+          <div class="flex flex-wrap gap-4">
+            <a href="mailto:contact@wrenbi.com" class="btn-primary magnetic-item" data-strength="40">
+              <span class="flex items-center">
+                Get In Touch
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </a>
+            
+            <a href="#" class="relative inline-flex items-center justify-center overflow-hidden py-3 px-6 font-medium rounded-full text-dark border border-dark transition-all duration-300 hover:bg-dark hover:text-light magnetic-item" data-strength="30">
+              <span class="relative z-10">Schedule a Consultation</span>
+            </a>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <form class="p-10 border border-dark/10 rounded-lg hover-outline">
+            <div class="mb-6">
+              <label for="name" class="block text-sm font-medium mb-2">Name</label>
+              <input type="text" id="name" class="w-full p-3 border border-dark/20 rounded-md focus:outline-none focus:border-dark transition-colors" placeholder="Your name">
+            </div>
+            
+            <div class="mb-6">
+              <label for="email" class="block text-sm font-medium mb-2">Email</label>
+              <input type="email" id="email" class="w-full p-3 border border-dark/20 rounded-md focus:outline-none focus:border-dark transition-colors" placeholder="your@email.com">
+            </div>
+            
+            <div class="mb-6">
+              <label for="message" class="block text-sm font-medium mb-2">Message</label>
+              <textarea id="message" rows="4" class="w-full p-3 border border-dark/20 rounded-md focus:outline-none focus:border-dark transition-colors" placeholder="Tell us about your project..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary w-full justify-center">
+              <span>Send Message</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="pt-20 pb-10 bg-dark text-light relative">
+    <div class="noise-pattern opacity-20"></div>
+    
+    <div class="container-fluid relative">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16 border-b border-light/10">
+        <div class="col-span-1 md:col-span-2">
+          <a href="#" class="text-3xl font-bold tracking-tight">
+            W<span class="text-accent">.</span>
+          </a>
+          <p class="mt-6 max-w-md text-light/70">
+            Trusted advice and sharp execution across AI, regulation, and IT strategy. We bring clarity where others bring chaos.
+          </p>
+        </div>
+        
+        <div>
+          <div class="font-mono text-xs uppercase mb-4">Navigation</div>
+          <ul class="space-y-2">
+            <li><a href="#about" class="hover:text-accent transition-colors">About</a></li>
+            <li><a href="#founder" class="hover:text-accent transition-colors">Founder</a></li>
+            <li><a href="#services" class="hover:text-accent transition-colors">Services</a></li>
+            <li><a href="#contact" class="hover:text-accent transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <div class="font-mono text-xs uppercase mb-4">Connect</div>
+          <ul class="space-y-2">
+            <li>
+              <a href="mailto:contact@wrenbi.com" class="hover:text-accent transition-colors">
+                contact@wrenbi.com
+              </a>
+            </li>
+            <li>
+              <a href="#" class="hover:text-accent transition-colors">
+                LinkedIn
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div class="font-mono text-xs text-light/60">
+          © 2025 Wrenbi Consulting. All rights reserved.
+        </div>
+        
+        <div class="mt-4 md:mt-0 font-mono text-xs text-light/60">
+          <a href="#" class="hover:text-light transition-colors">Privacy Policy</a>
+          <span class="mx-2">•</span>
+          <a href="#" class="hover:text-light transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // GSAP initialization
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Loading animation
+    function initLoading() {
+      const loadingScreen = document.getElementById('loading-screen');
+      const loadingCircle = document.getElementById('loading-circle');
+      
+      gsap.to(loadingCircle, {
+        strokeDashoffset: 0,
+        duration: 2,
+        ease: "power2.inOut"
+      });
+      
+      gsap.to(loadingScreen, {
+        opacity: 0,
+        duration: 0.5,
+        delay: 2.5,
+        onComplete: () => {
+          loadingScreen.style.display = 'none';
+          // Start animations after loading
+          initAnimations();
+        }
+      });
+    }
+    
+    // Custom cursor
+    function initCustomCursor() {
+      const cursorDot = document.querySelector('.cursor-dot');
+      const cursorOutline = document.querySelector('.cursor-outline');
+      
+      if (!cursorDot || !cursorOutline) return;
+      
+      window.addEventListener('mousemove', (e) => {
+        const posX = e.clientX;
+        const posY = e.clientY;
+        
+        cursorDot.style.left = `${posX}px`;
+        cursorDot.style.top = `${posY}px`;
+        
+        // Delayed follow for outline
+        gsap.to(cursorOutline, {
+          left: posX,
+          top: posY,
+          duration: 0.15
+        });
+      });
+      
+      // Cursor hover effect for links and buttons
+      const hoverables = document.querySelectorAll('a, button, input, textarea, .hover-outline');
+      
+      hoverables.forEach(hoverable => {
+        hoverable.addEventListener('mouseenter', () => {
+          cursorDot.style.transform = 'translate(-50%, -50%) scale(1.5)';
+          cursorOutline.style.width = '30px';
+          cursorOutline.style.height = '30px';
+        });
+        
+        hoverable.addEventListener('mouseleave', () => {
+          cursorDot.style.transform = 'translate(-50%, -50%) scale(1)';
+          cursorOutline.style.width = '40px';
+          cursorOutline.style.height = '40px';
+        });
+      });
+    }
+    
+    // Menu toggle
+    function initMenu() {
+      const menuToggle = document.getElementById('menu-toggle');
+      const fullscreenMenu = document.getElementById('fullscreen-menu');
+      const menuIcon = document.querySelector('.menu-icon');
+      const menuLinks = document.querySelectorAll('.menu-link');
+      
+      let isOpen = false;
+      
+      menuToggle.addEventListener('click', () => {
+        isOpen = !isOpen;
+        
+        if (isOpen) {
+          fullscreenMenu.classList.remove('hidden');
+          fullscreenMenu.classList.add('pointer-events-auto');
+          
+          // Animate menu icon
+          gsap.to(menuIcon.children[0], {
+            rotate: 45,
+            y: 6,
+            duration: 0.4
+          });
+          
+          gsap.to(menuIcon.children[1], {
+            rotate: -45,
+            duration: 0.4
+          });
+          
+          // Staggered animation for menu items
+          gsap.fromTo(menuLinks, {
+            y: 20,
+            opacity: 0
+          }, {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            delay: 0.2
+          });
+        } else {
+          // Close menu
+          fullscreenMenu.classList.add('hidden');
+          fullscreenMenu.classList.remove('pointer-events-auto');
+          
+          // Reset menu icon
+          gsap.to(menuIcon.children[0], {
+            rotate: 0,
+            y: 0,
+            duration: 0.4
+          });
+          
+          gsap.to(menuIcon.children[1], {
+            rotate: 0,
+            duration: 0.4
+          });
+        }
+      });
+      
+      // Close menu when clicking a navigation link
+      menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          isOpen = false;
+          fullscreenMenu.classList.add('hidden');
+          fullscreenMenu.classList.remove('pointer-events-auto');
+          
+          // Reset menu icon
+          gsap.to(menuIcon.children[0], {
+            rotate: 0,
+            y: 0,
+            duration: 0.4
+          });
+          
+          gsap.to(menuIcon.children[1], {
+            rotate: 0,
+            duration: 0.4
+          });
+        });
+      });
+    }
+    
+    // Magnetic elements
+    function initMagneticElements() {
+      const magneticItems = document.querySelectorAll('.magnetic-item');
+      
+      magneticItems.forEach(item => {
+        const strength = item.getAttribute('data-strength') || 20;
+        
+        item.addEventListener('mousemove', (e) => {
+          const boundingRect = item.getBoundingClientRect();
+          const itemX = boundingRect.left + boundingRect.width / 2;
+          const itemY = boundingRect.top + boundingRect.height / 2;
+          
+          const mouseX = e.clientX;
+          const mouseY = e.clientY;
+          
+          const deltaX = (mouseX - itemX) / parseInt(strength);
+          const deltaY = (mouseY - itemY) / parseInt(strength);
+          
+          gsap.to(item, {
+            x: deltaX,
+            y: deltaY,
+            duration: 0.3
+          });
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          gsap.to(item, {
+            x: 0,
+            y: 0,
+            duration: 0.7
+          });
+        });
+      });
+    }
+    
+    // Text split and reveal animations
+    function initTextAnimations() {
+      // No longer needed as we've removed the split-text and reveal-text classes
+      // but keeping the function for potential future use
+      console.log("Text animations initialized but not active");
+    }
+    
+    // Image reveal animations
+    function initImageAnimations() {
+      // Make all reveal-image elements visible immediately
+      document.querySelectorAll('.reveal-image').forEach(image => {
+        image.classList.add('is-revealed');
+      });
+    }
+    
+    // Header scroll effect
+    function initHeaderEffect() {
+      const header = document.getElementById('main-header');
+      
+      ScrollTrigger.create({
+        start: 100,
+        onEnter: () => {
+          header.classList.add('bg-light/90', 'backdrop-blur-md', 'shadow-sm');
+        },
+        onLeaveBack: () => {
+          header.classList.remove('bg-light/90', 'backdrop-blur-md', 'shadow-sm');
+        }
+      });
+    }
+    
+    // Initialize all animations
+    function initAnimations() {
+      initCustomCursor();
+      initMenu();
+      initMagneticElements();
+      initTextAnimations();
+      initImageAnimations();
+      initHeaderEffect();
+    }
+    
+    // Start with loading animation
+    document.addEventListener('DOMContentLoaded', initLoading);
+  </script>
+<!-- Back to Showcase Button -->
+<!-- Add this code just before the closing </body> tag in each design file -->
+
+<style>
+  .back-to-showcase {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+  }
+  
+  .back-to-showcase:hover {
+    transform: scale(1.1);
+    background: rgb(17, 17, 17);
+  }
+  
+  .back-to-showcase i {
+    font-size: 18px;
+  }
+  
+  .back-to-showcase .tooltip {
+    position: absolute;
+    right: 60px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .back-to-showcase:hover .tooltip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>
+
+<!-- Add Font Awesome if not already included in the design -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<button class="back-to-showcase" onclick="window.location.href='index.html'">
+  <i class="fas fa-arrow-left"></i>
+  <span class="tooltip">Back to Showcase</span>
+</button>  
+</body>
+</html>

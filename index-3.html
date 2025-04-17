@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wrenbi - Intelligent Change</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@12.7.4/dist/framer-motion.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#1a1a1a',
+            medium: '#4a4a4a',
+            light: '#f8f8f8',
+            accent: '#888888',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 5rem;
+    }
+    
+    body {
+      @apply font-sans text-medium antialiased;
+    }
+    
+    .mask-pattern {
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='10' height='10' fill='%23000'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23000'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='10' height='10' fill='%23000'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23000'/%3E%3C/svg%3E");
+      -webkit-mask-size: 20px 20px;
+      mask-size: 20px 20px;
+    }
+    
+    .gradient-border {
+      position: relative;
+    }
+    
+    .gradient-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, #1a1a1a 0%, transparent 50%, #888888 100%) border-box;
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) padding-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    .grid-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='0' stroke='%23e5e5e5' stroke-width='0.5'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+    }
+    
+    .container-wide {
+      @apply max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-20;
+    }
+    
+    .circle-accent {
+      @apply absolute w-32 h-32 rounded-full bg-accent/10 -z-10;
+    }
+    
+    .service-card {
+      @apply relative p-8 rounded-xl bg-white overflow-hidden transition-all duration-500 border border-transparent shadow-sm;
+    }
+    
+    .service-card:hover {
+      @apply shadow-lg border-accent/30 scale-[1.01];
+    }
+    
+    .service-card::before {
+      content: '';
+      @apply absolute top-0 left-0 w-0 h-1 bg-dark transition-all duration-700;
+    }
+    
+    .service-card:hover::before {
+      @apply w-full;
+    }
+    
+    .nav-item {
+      @apply relative text-medium hover:text-dark transition-colors duration-300 py-2;
+    }
+    
+    .nav-item::after {
+      content: '';
+      @apply absolute left-0 bottom-0 w-0 h-[2px] bg-dark transition-all duration-300;
+    }
+    
+    .nav-item:hover::after {
+      @apply w-full;
+    }
+    
+    .btn {
+      @apply inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden;
+    }
+    
+    .btn span {
+      @apply relative z-10;
+    }
+    
+    .btn-dark {
+      @apply btn text-light bg-dark hover:bg-opacity-90;
+    }
+    
+    .btn-light {
+      @apply btn text-dark bg-light hover:bg-opacity-90;
+    }
+    
+    .btn-outline {
+      @apply btn text-dark border border-dark hover:bg-dark hover:text-light;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <!-- Header/Navigation with slight blur effect -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-light/80 backdrop-blur-md border-b border-dark/10">
+    <div class="container-wide">
+      <div class="flex items-center justify-between h-20">
+        <a href="#" class="block relative">
+          <span class="text-3xl font-black tracking-tighter text-dark">WRENBI</span>
+          <span class="absolute -top-1 -right-2 w-2 h-2 bg-accent rounded-full"></span>
+        </a>
+        
+        <!-- Mobile menu button -->
+        <button id="menu-toggle" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-dark/5">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        
+        <!-- Desktop navigation -->
+        <nav class="hidden lg:flex items-center space-x-10">
+          <a href="#about" class="nav-item">About</a>
+          <a href="#founder" class="nav-item">Our Founder</a>
+          <a href="#services" class="nav-item">Services</a>
+          <a href="#contact" class="btn-dark">
+            <span>Let's Talk</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+    
+    <!-- Mobile navigation -->
+    <nav id="mobile-menu" class="hidden lg:hidden bg-light border-t border-dark/10">
+      <div class="container-wide py-6 space-y-6">
+        <a href="#about" class="block nav-item">About</a>
+        <a href="#founder" class="block nav-item">Our Founder</a>
+        <a href="#services" class="block nav-item">Services</a>
+        <a href="#contact" class="block btn-dark text-center mt-6">
+          <span>Let's Talk</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section with dynamic elements -->
+  <section class="pt-32 pb-20 lg:pt-40 lg:pb-32 relative overflow-hidden">
+    <!-- Decorative circles -->
+    <div class="circle-accent top-40 left-[10%] opacity-40"></div>
+    <div class="circle-accent top-60 right-[5%] opacity-30"></div>
+    <div class="circle-accent bottom-20 left-[30%] opacity-20"></div>
+    
+    <!-- Grid background pattern -->
+    <div class="absolute inset-0 grid-pattern opacity-30"></div>
+    
+    <div class="container-wide relative">
+      <div class="max-w-4xl">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-[1px] bg-dark mr-4"></div>
+          <span class="text-sm uppercase tracking-widest font-medium">Technology Consultancy</span>
+        </div>
+        
+        <h1 class="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-dark leading-[1.1]">
+          Intelligent 
+          <span class="relative inline-block">
+            Change
+            <span class="absolute bottom-2 left-0 w-full h-3 bg-accent/20"></span>
+          </span>
+        </h1>
+        
+        <p class="mt-8 text-xl leading-relaxed max-w-2xl">
+          Trusted advice and sharp execution across AI, regulation, and IT strategy.
+        </p>
+        
+        <div class="mt-12 flex flex-wrap gap-4">
+          <a href="#contact" class="btn-dark group">
+            <span class="group-hover:translate-x-1 transition-transform">Let's Talk</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+          <a href="#services" class="btn-outline">
+            <span>Our Services</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Animated pattern element -->
+      <div class="hidden lg:block absolute top-10 right-0 w-96 h-96 mask-pattern bg-accent/30"></div>
+    </div>
+  </section>
+
+  <!-- About Section with overlapping elements -->
+  <section id="about" class="py-24 relative">
+    <div class="container-wide">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <div class="lg:col-span-5 order-2 lg:order-1">
+          <div class="relative">
+            <!-- Decorative elements -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 rounded-md border border-dark/20 -z-10"></div>
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 rounded-md border border-dark/20 -z-10"></div>
+            
+            <!-- Content block -->
+            <div class="gradient-border bg-white p-10 rounded-xl">
+              <h2 class="text-4xl font-bold text-dark leading-tight">For Projects That Can't Afford to Go Sideways</h2>
+              <div class="w-16 h-1 bg-accent/30 my-6"></div>
+              <p class="text-lg leading-relaxed">
+                With over 20 years of experience at the intersection of technology, business, and risk, we help financial services organisations solve the hard problems—delivering impactful IT solutions, navigating regulatory complexity, and aligning technology with business strategy.
+              </p>
+              <p class="font-medium text-dark mt-6 text-xl italic">
+                "We bring clarity where others bring chaos."
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="lg:col-span-7 order-1 lg:order-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-xl shadow-sm">
+              <h3 class="text-xl font-bold text-dark">Precision thinking for complex times.</h3>
+              <div class="w-10 h-0.5 bg-accent my-4"></div>
+              <p class="text-medium">
+                From foundational IT projects to cutting-edge AI governance, we lead transformation with care, insight, and structure.
+              </p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-sm">
+              <h3 class="text-xl font-bold text-dark">Our work sits where the stakes are high.</h3>
+              <div class="w-10 h-0.5 bg-accent my-4"></div>
+              <p class="text-medium">
+                We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks.
+              </p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-sm md:col-span-2">
+              <h3 class="text-xl font-bold text-dark">Wrenbi is a boutique consultancy built for complexity.</h3>
+              <div class="w-10 h-0.5 bg-accent my-4"></div>
+              <p class="text-medium">
+                We specialise in translating regulatory, ethical, and operational complexity into clear, actionable frameworks—ensuring innovation happens safely, strategically, and in alignment with your business goals.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder Section with angled design -->
+  <section id="founder" class="py-24 relative overflow-hidden bg-dark text-light">
+    <!-- Decorative elements -->
+    <div class="absolute top-0 right-0 w-full h-20 bg-light skew-y-3 -translate-y-10"></div>
+    <div class="absolute bottom-0 left-0 w-full h-20 bg-light -skew-y-3 translate-y-10"></div>
+    
+    <div class="container-wide relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <div class="lg:col-span-5">
+          <div class="relative">
+            <img src="https://placehold.co/600x700" alt="Clare McGovern" class="w-full h-auto rounded-xl relative z-10 shadow-xl">
+            <!-- Decorative elements -->
+            <div class="absolute top-6 -left-6 w-full h-full border-2 border-accent/30 rounded-xl -z-0"></div>
+          </div>
+        </div>
+        
+        <div class="lg:col-span-7">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-[1px] bg-light mr-4"></div>
+            <span class="text-sm uppercase tracking-widest font-medium">Leadership</span>
+          </div>
+          
+          <h2 class="text-4xl font-bold tracking-tight">Meet Our Founder</h2>
+          
+          <div class="mt-8">
+            <h3 class="text-2xl font-bold">Clare McGovern</h3>
+            <p class="mt-4 text-lg opacity-90 leading-relaxed">
+              Clare is the founder of Wrenbi and a seasoned IT consultant with over 25 years of experience delivering complex, high-stakes projects across the financial services sector.
+            </p>
+            
+            <div class="mt-8">
+              <div class="text-lg font-medium mb-4">Her career spans:</div>
+              
+              <div class="space-y-6">
+                <div class="flex">
+                  <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium">Leading major regulatory transformation programs</div>
+                    <div class="mt-1 opacity-80">at global banks and superannuation funds</div>
+                  </div>
+                </div>
+                
+                <div class="flex">
+                  <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium">Designing and refining IT governance frameworks</div>
+                    <div class="mt-1 opacity-80">that stand up to scrutiny</div>
+                  </div>
+                </div>
+                
+                <div class="flex">
+                  <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium">Building innovative digital learning solutions</div>
+                    <div class="mt-1 opacity-80">for enterprise clients</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="mt-8 text-lg opacity-90 leading-relaxed">
+              Clare combines deep technical fluency with strategic foresight, bringing a rare blend of rigour and creativity to every engagement. She's the one you call when the stakes are high, the timelines are tight, and the margin for error is nil.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section with creative cards -->
+  <section id="services" class="py-24 relative">
+    <div class="container-wide">
+      <div class="text-center mb-16">
+        <div class="flex items-center justify-center mb-4">
+          <div class="w-10 h-[1px] bg-dark mr-4"></div>
+          <span class="text-sm uppercase tracking-widest font-medium">Our Expertise</span>
+          <div class="w-10 h-[1px] bg-dark ml-4"></div>
+        </div>
+        
+        <h2 class="text-4xl md:text-5xl font-bold text-dark">Our Services</h2>
+        <p class="mt-6 text-lg max-w-2xl mx-auto">
+          Strategic solutions for forward-thinking businesses
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div class="service-card group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-16 h-16 rounded-xl bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div class="text-sm font-medium px-3 py-1 rounded-full bg-dark/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              01
+            </div>
+          </div>
+          
+          <h3 class="text-xl font-bold text-dark mb-3">AI Strategy and Integration</h3>
+          <p class="text-medium leading-relaxed">
+            Develop and implement AI strategies that align with your business objectives and enhance operational efficiency.
+          </p>
+          
+          <div class="mt-6 pt-6 border-t border-dark/10">
+            <a href="#contact" class="inline-flex items-center text-dark font-medium group/link">
+              <span>Learn more</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform group-hover/link:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <div class="service-card group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-16 h-16 rounded-xl bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div class="text-sm font-medium px-3 py-1 rounded-full bg-dark/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              02
+            </div>
+          </div>
+          
+          <h3 class="text-xl font-bold text-dark mb-3">AI Usage Policies</h3>
+          <p class="text-medium leading-relaxed">
+            Create comprehensive AI usage policies that ensure ethical implementation, regulatory compliance, and effective governance.
+          </p>
+          
+          <div class="mt-6 pt-6 border-t border-dark/10">
+            <a href="#contact" class="inline-flex items-center text-dark font-medium group/link">
+              <span>Learn more</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform group-hover/link:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <div class="service-card group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-16 h-16 rounded-xl bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <div class="text-sm font-medium px-3 py-1 rounded-full bg-dark/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              03
+            </div>
+          </div>
+          
+          <h3 class="text-xl font-bold text-dark mb-3">Adaptive AI Governance</h3>
+          <p class="text-medium leading-relaxed">
+            Sustain and evolve your AI governance frameworks to ensure your initiatives remain responsible, effective, and aligned with business goals.
+          </p>
+          
+          <div class="mt-6 pt-6 border-t border-dark/10">
+            <a href="#contact" class="inline-flex items-center text-dark font-medium group/link">
+              <span>Learn more</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform group-hover/link:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <div class="service-card group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-16 h-16 rounded-xl bg-dark/5 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <div class="text-sm font-medium px-3 py-1 rounded-full bg-dark/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              04
+            </div>
+          </div>
+          
+          <h3 class="text-xl font-bold text-dark mb-3">IT Consulting</h3>
+          <p class="text-medium leading-relaxed">
+            Deliver high-impact IT consulting services, including regulatory compliance, e-learning development, and technical documentation.
+          </p>
+          
+          <div class="mt-6 pt-6 border-t border-dark/10">
+            <a href="#contact" class="inline-flex items-center text-dark font-medium group/link">
+              <span>Learn more</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform group-hover/link:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action with dynamic background -->
+  <section id="contact" class="py-24 relative overflow-hidden bg-dark text-light">
+    <!-- Decorative elements -->
+    <div class="absolute top-0 right-0 w-1/3 h-full mask-pattern bg-accent/20"></div>
+    <div class="absolute bottom-0 left-0 w-2/3 h-1/2 grid-pattern opacity-10"></div>
+    
+    <div class="container-wide relative">
+      <div class="max-w-3xl">
+        <h2 class="text-4xl font-bold leading-tight">
+          At Wrenbi, we're more than consultants – we're your partners in navigating the complex landscape of modern business technology.
+        </h2>
+        <p class="mt-6 text-xl opacity-90">
+          Let's build your future together.
+        </p>
+        
+        <div class="mt-12 flex flex-wrap gap-4">
+          <a href="mailto:contact@wrenbi.com" class="btn-light group">
+            <span class="group-hover:-translate-y-1 transition-transform">Get In Touch</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform rotate-90 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+          <a href="#" class="btn text-light border border-light/30 hover:bg-light/10">
+            <span>Schedule a Consultation</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer with minimal design -->
+  <footer class="py-16 bg-light">
+    <div class="container-wide">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div>
+          <div class="text-2xl font-black tracking-tighter text-dark relative inline-block">
+            WRENBI
+            <span class="absolute -top-1 -right-2 w-2 h-2 bg-accent rounded-full"></span>
+          </div>
+          <p class="mt-4 text-medium">
+            Intelligent solutions for forward-thinking businesses.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold text-dark mb-4">Contact</h3>
+          <ul class="space-y-3">
+            <li>
+              <a href="mailto:contact@wrenbi.com" class="flex items-center text-medium hover:text-dark transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                contact@wrenbi.com
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold text-dark mb-4">Connect</h3>
+          <ul class="space-y-3">
+            <li>
+              <a href="#" class="flex items-center text-medium hover:text-dark transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                LinkedIn
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold text-dark mb-4">Legal</h3>
+          <p class="text-medium">
+            © 2025 Wrenbi Consulting.<br>All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Close mobile menu when clicking a link
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+<!-- Back to Showcase Button -->
+<!-- Add this code just before the closing </body> tag in each design file -->
+
+<style>
+  .back-to-showcase {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+  }
+  
+  .back-to-showcase:hover {
+    transform: scale(1.1);
+    background: rgb(17, 17, 17);
+  }
+  
+  .back-to-showcase i {
+    font-size: 18px;
+  }
+  
+  .back-to-showcase .tooltip {
+    position: absolute;
+    right: 60px;
+    background: rgba(17, 17, 17, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .back-to-showcase:hover .tooltip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>
+
+<!-- Add Font Awesome if not already included in the design -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<button class="back-to-showcase" onclick="window.location.href='index.html'">
+  <i class="fas fa-arrow-left"></i>
+  <span class="tooltip">Back to Showcase</span>
+</button>  
+</body>
+</html>
